@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -120,6 +120,27 @@ namespace Api_Spotify
                 
             }
 
+        }
+
+        public void GetToken()
+        {
+            string clientId = "bbc8cf81d7ba4eb6b4ec1a91dd1f9aaa";
+            string clientSecret = "a42eb8efe03543d385a1e1aafb5932bb";
+
+            var cliente = new WebClient();
+
+            var parametros = new NameValueCollection();
+            parametros.Add("grant_type", "client_credentials");
+            //var param = Convert.ChangeType(parametros, "application/x-www-form-urlencoded")
+
+            var permiso = Convert.ToBase64String(Encoding.Default.GetBytes($"{clientId}:{clientSecret}"));
+            Console.WriteLine(permiso);
+            cliente.Headers.Add(HttpRequestHeader.Authorization, "Beared" + permiso);
+
+            var token = cliente.UploadValues("https://accounts.spotify.com/api/token", parametros);
+            var textResponse = Encoding.UTF8.GetString(token);
+
+            Console.WriteLine(textResponse);
         }
 
     }
