@@ -15,20 +15,22 @@ namespace Api_Spotify
 {
     public partial class Form1 : Form
     {
-        string playlist_url;
-        string token;
+        
         public Form1()
         {
             InitializeComponent();
-            playlist_url = "https://api.spotify.com/v1/tracks/7f0vVL3xi4i78Rv5Ptn2s1";
-            token = "Bearer BQBRQcZYLDlcJRWslqb6Iiny4_2cnVKYAiNEzfzJ3tynbUnbxeeK4h9Gbm7BwcR" +
-                "4ApT80qLWl4O9Ighz1TMUOnrJ7dCS8TNS3No-7YFQjXaQV2AEdFLfvc0iRkm_9U-vqc9GYr8Nh1Vhl" +
-                "IhcEQWHkZVVIGeC-UQXTDnr7df6HPY6sbL0QOCRvI0JiU-ye_GykkdnSxaupj-6KfmrA8e67NoMQIW" +
-                "xrs_QtkEWkRtl1ZTjtqTSCw67Yc8VlZOT3UT7K4mGPCMQ0hA6ddHQ5FnerMnfjMGgOEj3";
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            string playlist_url;
+            string token;
+            playlist_url = "https://api.spotify.com/v1/tracks/7f0vVL3xi4i78Rv5Ptn2s1";
+            token = "Bearer BQBRQcZYLDlcJRWslqb6Iiny4_2cnVKYAiNEzfzJ3tynbUnbxeeK4h9Gbm7BwcR" +
+                "4ApT80qLWl4O9Ighz1TMUOnrJ7dCS8TNS3No-7YFQjXaQV2AEdFLfvc0iRkm_9U-vqc9GYr8Nh1Vhl" +
+                "IhcEQWHkZVVIGeC---ye_GykkdnSxaupj-6KfmrA8e67NoMQIW" +
+                "xrs_QtkEWkRtl1ZTjtqTSCw67Yc8VlZOT3UT7K4mGPCMQ0hA6ddHQ5FnerMnfjMGgOEj3";
             // Crear la peticion a la URL. 
 
             WebRequest request = WebRequest.Create(playlist_url);
@@ -59,20 +61,25 @@ namespace Api_Spotify
             response.Close();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button2_Click_1(object sender, EventArgs e)
         {
+            var tokenPost = "Bearer BQCKgKkQR5jyNcS_78T9aM_kxEuuf47JGQKrb6kKQQEjUU_RjxbTqTaNU0Steko8mD_Gq7zTUClJR1eAWJjeWHmF70jjbYFeoR-mu-sYYJJJBIXDEhS8HSXp2x5lOMpDGDAqyaZW36SGW582A_mdjuxs2WXDf104WUQQN3ASfvnVPVO8QYv2tJlyfyEkJOkVlUhUeE_9D99jIQyA0yTYjtoFyjMXhaJ2gmpkfXcOummtFpOPH0huFDGVQDGkZZ7nfDMfrjNDZW_Jal8keLNHL0L-CO3QpDRN";
+            var url = "https://api.spotify.com/v1/playlists/1KRYEj2Lw5Mug4A0n6sRkV/tracks?position=1&uris=spotify:track:3NakEPSaVKsqqimJW66xCc";
+
+            string parameters = "position=1&uris=spotify:track:3NakEPSaVKsqqimJW66xCc";
+            byte[] byteArray = System.Text.Encoding.ASCII.GetBytes(parameters);
+            
             // Create a request using a URL that can receive a post.
-            WebRequest request = WebRequest.Create("http://www.contoso.com/PostAccepter.aspx ");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.Headers.Add("Authorization", tokenPost);
+            request.Accept ="application/json";
+            
             // Set the Method property of the request to POST.
             request.Method = "POST";
 
-            // Create POST data and convert it to a byte array.
-            string postData = "This is a test that posts this string to a Web server.";
-
-            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-
             // Set the ContentType property of the WebRequest.
-            request.ContentType = "application/x-www-form-urlencoded";
+            request.ContentType = "application/json";
+
             // Set the ContentLength property of the WebRequest.
             request.ContentLength = byteArray.Length;
 
@@ -84,26 +91,36 @@ namespace Api_Spotify
             dataStream.Close();
 
             // Get the response.
-            WebResponse response = request.GetResponse();
-            // Display the status.
-
-            textBox1.Text = ((HttpWebResponse)response).StatusDescription;
-            // Get the stream containing content returned by the server.
-            // The using block ensures the stream is automatically closed.
-            using (dataStream = response.GetResponseStream())
+            try
             {
-                // Open the stream using a StreamReader for easy access.
-                StreamReader reader = new StreamReader(dataStream);
-                // Read the content.
-                string responseFromServer = reader.ReadToEnd();
-                // Display the content.
-                textBox1.Text += responseFromServer;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                // Display the status.
+                textBox1.Text = response.StatusDescription;
+
+                // Get the stream containing content returned by the server.
+                // The using block ensures the stream is automatically closed.
+                using (dataStream = response.GetResponseStream())
+                {
+                    // Open the stream using a StreamReader for easy access.
+                    StreamReader reader = new StreamReader(dataStream);
+                    // Read the content.
+                    string responseFromServer = reader.ReadToEnd();
+                    // Display the content.
+                    textBox1.Text += responseFromServer;
+                }
+
+                // Close the response.
+                response.Close();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException);
+                
             }
 
-
-            // Close the response.
-            response.Close();
-
         }
+
     }
 }
